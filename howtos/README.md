@@ -1,3 +1,8 @@
+Created from https://codeberg.org/charlieroberts/gulls.git
+
+Assignment 4 can be found at demos>1_game_of_life
+
+
 # howtos
 
 This folder contains small examples that illustrate individual concepts / techniques. The howtos in this directory are presented in a few different ways:
