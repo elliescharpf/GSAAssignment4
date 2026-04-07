@@ -109,4 +109,5 @@ const computePass = sg.compute({
   dispatchCount: [Math.ceil(width / 8), Math.ceil(height / 8), 1],
 });
 
-sg.run(computePass, computePass, renderPass)
+// computePass multiple times to speed it up
+sg.run(computePass, computePass, computePass, computePass, renderPass)
