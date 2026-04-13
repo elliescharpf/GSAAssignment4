@@ -1,11 +1,12 @@
 struct RDParams {
-    dA: f32,
-    dB: f32,
+    dA:   f32,
+    dB:   f32,
     feed: f32,
     kill: f32,
-    dt: f32,
-    ox: f32,
-    oy: f32
+    ox:   f32,
+    oy:   f32,
+    _pad0: f32,
+    _pad1: f32
 };
 
 @group(0) @binding(0) var<uniform> res: vec2f;

@@ -3,9 +3,10 @@ struct RDParams {
     dB:   f32,
     feed: f32,
     kill: f32,
-    dt:   f32,
     ox:   f32,
-    oy:   f32
+    oy:   f32,
+    _pad0: f32,
+    _pad1: f32
 };
 
 @group(0) @binding(0) var<uniform> res: vec2f;
@@ -43,6 +44,9 @@ fn cs(@builtin(global_invocation_id) gid: vec3u) {
     let a = ab.x;
     let b = ab.y;
 
+    let wx = 1.0 + rd.ox;
+    let wy = 1.0 + rd.oy;
+
     // Laplacian
     var lapA: f32 = 0.0;
     var lapB: f32 = 0.0;
@@ -56,13 +60,15 @@ fn cs(@builtin(global_invocation_id) gid: vec3u) {
 
     // Orthogonal
     {
-        let n = statein[index(x, y - 1)];
-        let s = statein[index(x, y + 1)];
-        let e = statein[index(x + 1, y)];
+        let n  = statein[index(x, y - 1)];
+        let s  = statein[index(x, y + 1)];
+        let e  = statein[index(x + 1, y)];
         let wv = statein[index(x - 1, y)];
 
-        lapA += 0.2 * (n.x + s.x + e.x + wv.x);
-        lapB += 0.2 * (n.y + s.y + e.y + wv.y);
+        lapA += 0.2 * wy * (n.x + s.x);
+        lapA += 0.2 * wx * (e.x + wv.x);
+        lapB += 0.2 * wy * (n.y + s.y);
+        lapB += 0.2 * wx * (e.y + wv.y);
     }
 
     // Diagonal
@@ -76,16 +82,12 @@ fn cs(@builtin(global_invocation_id) gid: vec3u) {
         lapB += 0.05 * (nw.y + ne.y + sw.y + se.y);
     }
 
-    // Orientation
-    lapA += rd.ox * 0.1;
-    lapB += rd.oy * 0.1;
-
     // Parameters
     let dA   = rd.dA;
     let dB   = rd.dB;
     let feed = rd.feed;
     let kill = rd.kill;
-    let dt   = rd.dt;
+    let dt   = 1.0;
 
     let reaction = a * b * b;
 

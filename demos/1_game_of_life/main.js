@@ -16,21 +16,26 @@ const params = {
   dB: 0.5,
   feed: 0.055,
   kill: 0.062,
-  dt: 1.0,
   ox: 0.0,
   oy: 0.0
 };
 
+const rdData = [
+  params.dA, params.dB, params.feed, params.kill,
+  params.ox, params.oy, 0.0, 0.0
+];
+
+const rdUniform = sg.uniform(rdData);
+
 // Uniform buffer
-const rdUniform = sg.uniform([
-  params.dA,
-  params.dB,
-  params.feed,
-  params.kill,
-  params.dt,
-  params.ox,
-  params.oy
-]);
+function updateUniform() {
+  rdData[0] = params.dA;
+  rdData[1] = params.dB;
+  rdData[2] = params.feed;
+  rdData[3] = params.kill;
+  rdData[4] = params.ox;
+  rdData[5] = params.oy;
+}
 
 // TweakPane UI
 const pane = new Pane();
@@ -43,24 +48,10 @@ pane.addBinding(params, 'feed', {min: 0.0, max: 0.1, step: 0.0001})
     .on('change', updateUniform);
 pane.addBinding(params, 'kill', {min: 0.0, max: 0.1, step: 0.0001})
     .on('change', updateUniform);
-pane.addBinding(params, 'dt', {min: 0.1, max: 5.0, step: 0.01})
-    .on('change', updateUniform);
 pane.addBinding(params, 'ox', {min: -1.0, max: 1.0, step: 0.01})
     .on('change', updateUniform);
 pane.addBinding(params, 'oy', {min: -1.0, max: 1.0, step: 0.01})
     .on('change', updateUniform);
-
-function updateUniform() {
-  rdUniform.set([
-    params.dA,
-    params.dB,
-    params.feed,
-    params.kill,
-    params.dt,
-    params.ox,
-    params.oy
-  ]);
-}
 
 // 2 floats per cell: [A, B]
 const state = new Float32Array(cells * 2)
@@ -110,4 +101,7 @@ const computePass = sg.compute({
 });
 
 // computePass multiple times to speed it up
-sg.run(computePass, computePass, computePass, computePass, renderPass)
+sg.run(
+    computePass, computePass, computePass, computePass, computePass,
+    computePass, computePass, computePass, computePass, renderPass
+)
